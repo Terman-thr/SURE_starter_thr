@@ -102,6 +102,7 @@ $(document).ready(function() {
 
     $("#saveButton").click(function() {
         var nodes = [];
+        var records = [];
         $('.draggable').each(function() {
             nodes.push({
                 id: $(this).attr('id').match(/\d+/)[0],
@@ -110,8 +111,6 @@ $(document).ready(function() {
                 content: $(this).text().trim()
             })
         });
-
-        var records = [];
         $('#recordConnect').each(function() {
             records.push({
                 from: $(this).attr("from"),
@@ -120,11 +119,16 @@ $(document).ready(function() {
         });
 
         // Send a post request with the information
-        $.post('/api/save/', {
-          nodes: nodes,
-          relation: records
-        }, function(data) {
-            console.log('Data saved');
+        $.ajax({
+            type: "POST",
+            url: "/api/save/",
+            data: `{
+                "nodes": ${JSON.stringify(nodes)},
+                "relation": ${JSON.stringify(records)}
+            }`,
+            success: function (response) {
+                console.log("data saved");
+            }
         });
     });
 

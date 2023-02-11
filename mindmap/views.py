@@ -1,5 +1,9 @@
+import json
 from django.shortcuts import render
 from .models import Node, Relation
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.db import connection
 
 
 def get_index(request):
@@ -13,11 +17,28 @@ def get_index(request):
     return render(request, 'index.html', {'nodes': nodes, 'relations': relation})
 
 
+@csrf_exempt
+def save_api(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        # rewrite the database and restart id from 1
+        Node.objects.all().delete()
+        Relation.objects.all().delete()
+        cursor = connection.cursor()
+        cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'mindmap_node'")
+        cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'mindmap_relation'")
+
+        print(data["relation"])
+
+        return JsonResponse({'status': 'success'})
+
+
 def db_reset():
     Node.objects.all().delete()
-    node1 = Node.objects.create(content='node 1', positionx=50, positiony=50)
-    node2 = Node.objects.create(content='node 2', positionx=360, positiony=150)
-    node3 = Node.objects.create(content='node 3', positionx=50, positiony=300)
+    Relation.objects.all().delete()
+    node1 = Node.objects.create(num=1, content='node 1', positionx=50, positiony=50)
+    node2 = Node.objects.create(num=2, content='node 2', positionx=360, positiony=150)
+    node3 = Node.objects.create(num=3, content='node 3', positionx=50, positiony=300)
     node1.save()
     node2.save()
     node3.save()

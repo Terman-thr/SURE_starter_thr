@@ -69,6 +69,12 @@ TEMPLATES = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
+
 WSGI_APPLICATION = 'SURE_starter_thr.wsgi.application'
 
 
