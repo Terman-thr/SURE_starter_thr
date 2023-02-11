@@ -14,42 +14,64 @@
 
     <script type="text/JavaScript">
 $(document).ready(function() {
-  $( ".draggable" ).draggable();
-  //$(".draggable").connections({'class': 'fast'});
-  //$("#draggable1, #draggable2").connections({'class': 'fast'});
+
+    $(".draggable").draggable();
     {% for relation in relations %}
         $("#draggable{{ relation.parent }}, #draggable{{ relation.child }}").connections({'class': 'fast'});
     {% endfor %}
-  $.repeat().add('connection').each($).connections('update').wait(10);
-  $(document).on('dblclick', '.draggable', function() {
-      const input = $('<input>', {
-          type: 'text',
-          val: $(this).text().trim()
-      });
-
-      $(this).html(input);
-    input.focus();
-  });
-
-  $(document).on('blur', 'input', function() {
-      const div = $(this).parent();
-      div.html('<p>' + $(this).val() + '</p>');
-  });
+    $.repeat().add('connection').each($).connections('update').wait(10);
 
 
-  {#$('.draggable').on("contextmenu", function() {#}
-  {#    alert($(this).text());#}
-  {# });#}
+    $(document).on('dblclick', '.draggable', function () {
+        const input = $('<input>', {
+            type: 'text',
+            val: $(this).text().trim()
+        });
 
-  // Handle right click events on each div
-  $(document).on('contextmenu','[id^="draggable"]', (function(event) {
-    event.preventDefault();
-    var options = '<button class="delete">Delete</button>' +
-                  '<button class="create">Create</button>';
-    $(this).append(options);
+        $(this).html(input);
+        input.focus();
+    });
 
-    // Handle create button click
-    $(this).find('.create').click(function() {
+    $(document).on('blur', 'input', function () {
+        const div = $(this).parent();
+        div.html('<p>' + $(this).val() + '</p>');
+    });
+
+
+    // Handle right click events on each div
+    $(document).on('contextmenu', '[id^="draggable"]', (function (event) {
+        event.preventDefault();
+        var options = '<button class="delete">Delete</button>' +
+            '<button class="create">Create</button>';
+        $(this).append(options);
+        // Handle create button click
+        $(this).find('.create').click(function () {
+            const newDiv = $('<div>', {
+                id: 'draggable' + Math.floor(Math.random() * 100),
+                class: 'draggable ui-widget-content ui-draggable',
+                style: 'position: absolute;',
+                html: '<p>Drag me around</p>'
+            });
+            newDiv.appendTo('body');
+            newDiv.draggable();
+            $(this).closest('.draggable').connections({to: newDiv, 'class': 'fast'});
+            $.repeat().add('connection').each($).connections('update').wait(10);
+        });
+        $(this).find('.delete').click(function () {
+            $(this).closest('.draggable').remove();
+            $(this).closest('.draggable').connections('remove');
+        });
+    }));
+
+
+    $(document).on("click", (function (event) {
+        if (!$(event.target).closest('.draggable').length) {
+            $('.draggable button').remove();
+        }
+    }));
+
+
+    $("#createDivButton").click(function() {
         const newDiv = $('<div>', {
             id: 'draggable' + Math.floor(Math.random() * 100),
             class: 'draggable ui-widget-content ui-draggable',
@@ -57,37 +79,16 @@ $(document).ready(function() {
             html: '<p>Drag me around</p>'
         });
         newDiv.appendTo('body');
-    newDiv.draggable();
-    {#$('.draggable').connections({'class': 'fast'});#}
-    $.repeat().add('connection').each($).connections('update').wait(10);
+        newDiv.draggable();
+        $.repeat().add('connection').each($).connections('update').wait(10);
     });
-
-    $(this).find('.delete').click(function() {
-      $(this).closest('.draggable').remove();
-    });
-  }));
-
-  $(document).on("click", (function(event) {
-    if (!$(event.target).closest('.draggable').length) {
-      $('.draggable button').remove();
-    }
-  }));
 });
-
-
     </script>
+
+
   </head>
   <body>
-    <button onclick="const newDiv = $('<div>', {
-      id: 'draggable' + Math.floor(Math.random() * 100),
-      class: 'draggable ui-widget-content ui-draggable',
-      style: 'position: relative;',
-      html: '<p>double click to edit</p>'
-    });
-    newDiv.appendTo('body');
-    newDiv.draggable();
-    {#$('.draggable').connections({'class': 'fast'});#}
-    $.repeat().add('connection').each($).connections('update').wait(10);">new root</button>
+    <button id="createDivButton">new root</button>
 
     <br style="clear: both;">
     {% for node in nodes %}
@@ -96,7 +97,6 @@ $(document).ready(function() {
       <p>{{ node.content }}</p>
     </div>
     {% endfor %}
-
 
 </body>
 </html>

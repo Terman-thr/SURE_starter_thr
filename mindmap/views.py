@@ -17,7 +17,7 @@ def db_reset():
     Node.objects.all().delete()
     node1 = Node.objects.create(content='node 1', positionx=50, positiony=50)
     node2 = Node.objects.create(content='node 2', positionx=360, positiony=150)
-    node3 = Node.objects.create(content='node 2', positionx=50, positiony=300)
+    node3 = Node.objects.create(content='node 3', positionx=50, positiony=300)
     node1.save()
     node2.save()
     node3.save()
