@@ -6,11 +6,11 @@ def get_index(request):
     db_reset()
     # Get all nodes
     nodes = Node.objects.all()
-
+    relation = Relation.objects.all()
     # Loop through the nodes and print the contents
     # for node in nodes:
     #     print(node.id)
-    return render(request, 'index.html', {'nodes': nodes})
+    return render(request, 'index.html', {'nodes': nodes, 'relations': relation})
 
 
 def db_reset():

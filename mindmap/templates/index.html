@@ -17,6 +17,9 @@ $(document).ready(function() {
   $( ".draggable" ).draggable();
   //$(".draggable").connections({'class': 'fast'});
   $("#draggable1, #draggable2").connections({'class': 'fast'});
+    {% for relation in relations %}
+        $("#draggable{{ relation.parent }}, #draggable{{ relation.child }}").connections({'class': 'fast'});
+    {% endfor %}
   $.repeat().add('connection').each($).connections('update').wait(10);
 
   // Handle right click events on each div
