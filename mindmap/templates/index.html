@@ -28,13 +28,13 @@ $(document).ready(function() {
 
     // Handle create button click
     $(this).find('.create').click(function() {
-      var newDiv = $('<div>', {
-      id: 'draggable' + Math.floor(Math.random() * 100),
-      class: 'draggable ui-widget-content ui-draggable',
-      style: 'position: relative;',
-      html: '<p>Drag me around</p>'
-    });
-    newDiv.appendTo('body');
+        const newDiv = $('<div>', {
+            id: 'draggable' + Math.floor(Math.random() * 100),
+            class: 'draggable ui-widget-content ui-draggable',
+            style: 'position: relative;',
+            html: '<p>Drag me around</p>'
+        });
+        newDiv.appendTo('body');
     newDiv.draggable();
     $('.draggable').connections({'class': 'fast'});
     $.repeat().add('connection').each($).connections('update').wait(10);
@@ -46,18 +46,18 @@ $(document).ready(function() {
   });
 
   $(document).on('dblclick', '.draggable', function() {
-    var input = $('<input>', {
-    type: 'text',
-    val: $(this).text().trim()
-    });
+      const input = $('<input>', {
+          type: 'text',
+          val: $(this).text().trim()
+      });
 
-    $(this).html(input);
+      $(this).html(input);
     input.focus();
   });
 
   $(document).on('blur', 'input', function() {
-    var div = $(this).parent();
-    div.html('<p>' + $(this).val() + '</p>');
+      const div = $(this).parent();
+      div.html('<p>' + $(this).val() + '</p>');
   });
 });
 
@@ -65,11 +65,11 @@ $(document).ready(function() {
     </script>
   </head>
   <body>
-    <button onclick="var newDiv = $('<div>', {
+    <button onclick="const newDiv = $('<div>', {
       id: 'draggable' + Math.floor(Math.random() * 100),
       class: 'draggable ui-widget-content ui-draggable',
       style: 'position: relative;',
-      html: '<p>new content</p>'
+      html: '<p>double click to edit</p>'
     });
     newDiv.appendTo('body');
     newDiv.draggable();
@@ -77,17 +77,26 @@ $(document).ready(function() {
     $.repeat().add('connection').each($).connections('update').wait(10);">new content</button>
 
 
+{#    <br style="clear: both;">#}
+{#    <div id="draggable1" class="draggable ui-widget-content ui-draggable" style="position: relative; left: 50px; top: 50px;">#}
+{#      <p>Drag me around</p>#}
+{#    </div>#}
+{#    <div id="draggable2" class="draggable ui-widget-content ui-draggable" style="position: relative; left: 150px; top: 150px;">#}
+{#      <p>Drag me around</p>#}
+{#    </div>#}
+{#    <br style="clear: both;">#}
+{#    <div id="draggable4" class="draggable ui-widget-content ui-draggable" style="position: relative; left: 50px; top: 150px;">#}
+{#      <p>Drag me around</p>#}
+{#    </div>#}
+
     <br style="clear: both;">
-    <div id="draggable1" class="draggable ui-widget-content ui-draggable" style="position: relative; left: 50px; top: 50px;">
-      <p>Drag me around</p>
+    {% for node in nodes %}
+    <div id="draggable{{ node.id }}" class="draggable ui-widget-content ui-draggable"
+         style="position: absolute; left: {{ node.positionx }}px; top: {{ node.positiony }}px;">
+      <p>{{ node.content }}</p>
     </div>
-    <div id="draggable2" class="draggable ui-widget-content ui-draggable" style="position: relative; left: 150px; top: 150px;">
-      <p>Drag me around</p>
-    </div>
-    <br style="clear: both;">
-    <div id="draggable4" class="draggable ui-widget-content ui-draggable" style="position: relative; left: 50px; top: 150px;">
-      <p>Drag me around</p>
-    </div>
+    {% endfor %}
+
 
 
 </html>
