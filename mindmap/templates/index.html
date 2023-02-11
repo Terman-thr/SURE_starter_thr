@@ -13,11 +13,19 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
 
     <script type="text/JavaScript">
+    var ID = 1000000;
 $(document).ready(function() {
 
     $(".draggable").draggable();
     {% for relation in relations %}
         $("#draggable{{ relation.parent }}, #draggable{{ relation.child }}").connections({'class': 'fast'});
+        var record = $('<div>', {
+            id: 'recordConnect',
+            style: 'width: 0; height: 0;',
+            from: {{ relation.parent }},
+            to: {{ relation.child }}
+        });
+        record.appendTo('body');
     {% endfor %}
     $.repeat().add('connection').each($).connections('update').wait(10);
 
@@ -46,8 +54,9 @@ $(document).ready(function() {
         $(this).append(options);
         // Handle create button click
         $(this).find('.create').click(function () {
+            ID++;
             const newDiv = $('<div>', {
-                id: 'draggable' + Math.floor(Math.random() * 100),
+                id: 'draggable' + ID,
                 class: 'draggable ui-widget-content ui-draggable',
                 style: 'position: absolute;',
                 html: '<p>Drag me around</p>'
@@ -55,6 +64,13 @@ $(document).ready(function() {
             newDiv.appendTo('body');
             newDiv.draggable();
             $(this).closest('.draggable').connections({to: newDiv, 'class': 'fast'});
+            var record = $('<div>', {
+                id: 'recordConnect',
+                style: 'width: 0; height: 0;',
+                from: $(this).closest('.draggable').attr('id').match(/\d+/),
+                to: ID
+            });
+            record.appendTo('body');
             $.repeat().add('connection').each($).connections('update').wait(10);
         });
         $(this).find('.delete').click(function () {
@@ -72,16 +88,46 @@ $(document).ready(function() {
 
 
     $("#createDivButton").click(function() {
+        ID++;
         const newDiv = $('<div>', {
-            id: 'draggable' + Math.floor(Math.random() * 100),
+            id: 'draggable' + ID,
             class: 'draggable ui-widget-content ui-draggable',
             style: 'position: absolute;',
             html: '<p>Drag me around</p>'
         });
         newDiv.appendTo('body');
         newDiv.draggable();
-        $.repeat().add('connection').each($).connections('update').wait(10);
     });
+
+
+    $("#saveButton").click(function() {
+        var nodes = [];
+        $('.draggable').each(function() {
+            nodes.push({
+                id: $(this).attr('id').match(/\d+/)[0],
+                positionx: $(this).position().left,
+                positiony: $(this).position().top,
+                content: $(this).text().trim()
+            })
+        });
+
+        var records = [];
+        $('#recordConnect').each(function() {
+            records.push({
+                from: $(this).attr("from"),
+                to: $(this).attr("to")
+            })
+        });
+
+        // Send a post request with the information
+        $.post('/api/save/', {
+          nodes: nodes,
+          relation: records
+        }, function(data) {
+            console.log('Data saved');
+        });
+    });
+
 });
     </script>
 
@@ -89,7 +135,7 @@ $(document).ready(function() {
   </head>
   <body>
     <button id="createDivButton">new root</button>
-
+    <button id="saveButton">save</button>
     <br style="clear: both;">
     {% for node in nodes %}
     <div id="draggable{{ node.id }}" class="draggable ui-widget-content ui-draggable"
@@ -97,6 +143,7 @@ $(document).ready(function() {
       <p>{{ node.content }}</p>
     </div>
     {% endfor %}
+
 
 </body>
 </html>
