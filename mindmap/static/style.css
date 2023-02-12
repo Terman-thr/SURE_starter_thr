@@ -14,10 +14,6 @@
   pointer-events: none;
 }
 
-.demo:hover span {
-  background: #55f;
-  opacity: 1;
-}
 .connection-border-right span {
   left: 1em;
 }

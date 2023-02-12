@@ -31,6 +31,7 @@ $(document).ready(function() {
 
 
     $(document).on('dblclick', '.draggable', function () {
+        // double click the div to input text in node
         const input = $('<input>', {
             type: 'text',
             val: $(this).text().trim()
@@ -54,6 +55,7 @@ $(document).ready(function() {
         $(this).append(options);
         // Handle create button click
         $(this).find('.create').click(function () {
+            // Create a new element that is connected to current element
             ID++;
             const newDiv = $('<div>', {
                 id: 'draggable' + ID,
@@ -74,6 +76,7 @@ $(document).ready(function() {
             $.repeat().add('connection').each($).connections('update').wait(10);
         });
         $(this).find('.delete').click(function () {
+            // delete option on one node
                 var temp = $(this).closest('.draggable');
             $('div[id="recordConnect"]').filter(function () {
                 console.log($(this).attr('from'), temp.attr('id').match(/\d+/)[0]);
@@ -87,6 +90,7 @@ $(document).ready(function() {
 
 
     $(document).on("click", (function (event) {
+        // delete options when click elewhere on the screen
         if (!$(event.target).closest('.draggable').length) {
             $('.draggable button').remove();
         }
@@ -94,6 +98,7 @@ $(document).ready(function() {
 
 
     $("#createDivButton").click(function() {
+        // Create a new element that isn't connected to any element
         ID++;
         const newDiv = $('<div>', {
             id: 'draggable' + ID,
@@ -107,6 +112,7 @@ $(document).ready(function() {
 
 
     $("#clearButton").click(function() {
+        // clear all elements
         $("div[id=recordConnect]").remove();
         $('.draggable').remove();
         $('.draggable').connections('remove');
@@ -114,6 +120,8 @@ $(document).ready(function() {
 
 
     $("#saveButton").click(function() {
+        // save the concept map but sending a post request
+        // to /api/save with all data in json
         var nodes = [];
         var records = [];
         $('.draggable').each(function() {
@@ -147,6 +155,7 @@ $(document).ready(function() {
 
 
     $("#resetButton").click(function() {
+        // first delete all elements and hardcoded the climate change mind map
         $("div[id=recordConnect]").remove();
         $('.draggable').remove();
         $('.draggable').connections('remove');

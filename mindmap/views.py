@@ -7,40 +7,47 @@ from django.db import connection
 
 
 def get_index(request):
+    """Render the index page."""
     #db_reset()
     # Get all nodes
     nodes = Node.objects.all()
     relation = Relation.objects.all()
-    print(Relation.objects.all())
-    # Loop through the nodes and print the contents
-    # for node in nodes:
-    #     print(node.id)
     return render(request, 'index.html', {'nodes': nodes, 'relations': relation})
 
 
 @csrf_exempt
 def save_api(request):
+    """
+    Handle request from index.html.
+
+    Save nodes and their relationship into db.sqlite3.
+
+    Turn off csrf token authorization.
+
+    """
     if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
+
         # rewrite the database and restart id from 1
         Node.objects.all().delete()
         Relation.objects.all().delete()
         cursor = connection.cursor()
         cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'mindmap_node'")
         cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'mindmap_relation'")
+
+        # Insert nodes and relation into database
         for node in data["nodes"]:
             new_node = Node(num=int(node['id']), positionx=node['positionx'],
                             positiony=node['positiony'], content=node['content'])
             new_node.save()
-        print(data["relation"])
         for relation in data["relation"]:
             new_relation = Relation(parent=relation['from'], child=relation['to'])
             new_relation.save()
-        print(Relation.objects.all())
         return JsonResponse({'status': 'success'})
 
 
 def db_reset():
+    """Test, reset database as three nodes and one relation."""
     Node.objects.all().delete()
     Relation.objects.all().delete()
     node1 = Node.objects.create(num=1, content='node 1', positionx=50, positiony=50)
