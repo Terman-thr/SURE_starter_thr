@@ -58,7 +58,7 @@ $(document).ready(function() {
             const newDiv = $('<div>', {
                 id: 'draggable' + ID,
                 class: 'draggable ui-widget-content ui-draggable',
-                style: 'position: absolute;',
+                style: 'position: absolute; line-height: 20px; padding: 5px;',
                 html: '<p>Drag me around</p>'
             });
             newDiv.appendTo('body');
@@ -98,7 +98,7 @@ $(document).ready(function() {
         const newDiv = $('<div>', {
             id: 'draggable' + ID,
             class: 'draggable ui-widget-content ui-draggable',
-            style: 'position: absolute;',
+            style: 'position: absolute; line-height: 20px; padding: 5px;',
             html: '<p>Drag me around</p>'
         });
         newDiv.appendTo('body');
@@ -157,7 +157,7 @@ $(document).ready(function() {
     <br style="clear: both;">
     {% for node in nodes %}
     <div id="draggable{{ node.num }}" class="draggable ui-widget-content ui-draggable"
-         style="position: absolute; left: {{ node.positionx }}px; top: {{ node.positiony }}px;">
+         style="line-height: 20px; padding: 5px; position: absolute; left: {{ node.positionx }}px; top: {{ node.positiony }}px;">
       <p>{{ node.content }}</p>
     </div>
     {% endfor %}
