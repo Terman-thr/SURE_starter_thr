@@ -74,6 +74,12 @@ $(document).ready(function() {
             $.repeat().add('connection').each($).connections('update').wait(10);
         });
         $(this).find('.delete').click(function () {
+                var temp = $(this).closest('.draggable');
+            $('div[id="recordConnect"]').filter(function () {
+                console.log($(this).attr('from'), temp.attr('id').match(/\d+/)[0]);
+                return $(this).attr('from') === temp.attr('id').match(/\d+/)[0]
+                    || $(this).attr('to') === temp.attr('id').match(/\d+/)[0];
+            }).remove();
             $(this).closest('.draggable').remove();
             $(this).closest('.draggable').connections('remove');
         });
@@ -100,6 +106,13 @@ $(document).ready(function() {
     });
 
 
+    $("#clearButton").click(function() {
+        $("div[id=recordConnect]").remove();
+        $('.draggable').remove();
+        $('.draggable').connections('remove');
+    });
+
+
     $("#saveButton").click(function() {
         var nodes = [];
         var records = [];
@@ -111,7 +124,7 @@ $(document).ready(function() {
                 content: $(this).text().trim()
             })
         });
-        $('#recordConnect').each(function() {
+        $('div[id="recordConnect"]').each(function() {
             records.push({
                 from: $(this).attr("from"),
                 to: $(this).attr("to")
@@ -140,9 +153,10 @@ $(document).ready(function() {
   <body>
     <button id="createDivButton">new root</button>
     <button id="saveButton">save</button>
+    <button id="clearButton">Clear All</button>
     <br style="clear: both;">
     {% for node in nodes %}
-    <div id="draggable{{ node.id }}" class="draggable ui-widget-content ui-draggable"
+    <div id="draggable{{ node.num }}" class="draggable ui-widget-content ui-draggable"
          style="position: absolute; left: {{ node.positionx }}px; top: {{ node.positiony }}px;">
       <p>{{ node.content }}</p>
     </div>

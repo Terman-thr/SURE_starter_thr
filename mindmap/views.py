@@ -11,6 +11,7 @@ def get_index(request):
     # Get all nodes
     nodes = Node.objects.all()
     relation = Relation.objects.all()
+    print(Relation.objects.all())
     # Loop through the nodes and print the contents
     # for node in nodes:
     #     print(node.id)
@@ -31,12 +32,11 @@ def save_api(request):
             new_node = Node(num=int(node['id']), positionx=node['positionx'],
                             positiony=node['positiony'], content=node['content'])
             new_node.save()
+        print(data["relation"])
         for relation in data["relation"]:
             new_relation = Relation(parent=relation['from'], child=relation['to'])
             new_relation.save()
-
-
-
+        print(Relation.objects.all())
         return JsonResponse({'status': 'success'})
 
 
@@ -50,5 +50,5 @@ def db_reset():
     node2.save()
     node3.save()
     nodes = Node.objects.all()
-    relation = Relation.objects.create(parent=nodes[0].id, child=nodes[1].id)
+    relation = Relation.objects.create(parent=nodes[0].num, child=nodes[1].num)
     relation.save()
