@@ -7,7 +7,7 @@ from django.db import connection
 
 
 def get_index(request):
-    db_reset()
+    #db_reset()
     # Get all nodes
     nodes = Node.objects.all()
     relation = Relation.objects.all()
@@ -27,8 +27,15 @@ def save_api(request):
         cursor = connection.cursor()
         cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'mindmap_node'")
         cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'mindmap_relation'")
+        for node in data["nodes"]:
+            new_node = Node(num=int(node['id']), positionx=node['positionx'],
+                            positiony=node['positiony'], content=node['content'])
+            new_node.save()
+        for relation in data["relation"]:
+            new_relation = Relation(parent=relation['from'], child=relation['to'])
+            new_relation.save()
 
-        print(data["relation"])
+
 
         return JsonResponse({'status': 'success'})
 
