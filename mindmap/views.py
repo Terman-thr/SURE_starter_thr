@@ -15,8 +15,15 @@ def get_index(request):
     return render(request, 'index.html', {'nodes': nodes, 'relations': relation})
 
 
+def get_map(request, id):
+    """Render different map requests."""
+    nodes = Node.objects.filter(mapid=id)
+    relation = Relation.objects.filter(mapid=id)
+    return render(request, 'map.html', {'nodes': nodes, 'relations': relation, 'mapid': id})
+
+
 @csrf_exempt
-def save_api(request):
+def save_api(request, mapid):
     """
     Handle request from index.html.
 
@@ -29,19 +36,19 @@ def save_api(request):
         data = json.loads(request.body.decode('utf-8'))
 
         # rewrite the database and restart id from 1
-        Node.objects.all().delete()
-        Relation.objects.all().delete()
+        Node.objects.filter(mapid=mapid).delete()
+        Relation.objects.filter(mapid=mapid).delete()
         cursor = connection.cursor()
-        cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'mindmap_node'")
-        cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'mindmap_relation'")
+        # cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'mindmap_node'")
+        # cursor.execute("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'mindmap_relation'")
 
         # Insert nodes and relation into database
         for node in data["nodes"]:
-            new_node = Node(num=int(node['id']), positionx=node['positionx'],
+            new_node = Node(mapid=mapid, num=int(node['id']), positionx=node['positionx'],
                             positiony=node['positiony'], content=node['content'])
             new_node.save()
         for relation in data["relation"]:
-            new_relation = Relation(parent=relation['from'], child=relation['to'])
+            new_relation = Relation(mapid=mapid, parent=relation['from'], child=relation['to'])
             new_relation.save()
         return JsonResponse({'status': 'success'})
 

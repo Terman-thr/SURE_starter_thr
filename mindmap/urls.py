@@ -5,5 +5,6 @@ from . import views
 # URLConf
 urlpatterns = [
     path('', views.get_index),
-    path('api/save/', views.save_api),
+    path('api/save/<int:mapid>/', views.save_api),
+    path('map/<int:id>/', views.get_map),
 ]

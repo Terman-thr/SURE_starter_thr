@@ -5,6 +5,7 @@ from django.db import models
 class Node(models.Model):
     """Num is used for identify the node."""
     id = models.AutoField(primary_key=True)
+    mapid = models.IntegerField()
     num = models.IntegerField(default=0)
     content = models.CharField(max_length=200)
     positionx = models.IntegerField()
@@ -13,5 +14,6 @@ class Node(models.Model):
 
 class Relation(models.Model):
     id = models.AutoField(primary_key=True)
+    mapid = models.IntegerField()
     parent = models.IntegerField()
     child = models.IntegerField()

@@ -3,7 +3,7 @@
 <html lang="en"><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Mind Map</title>
+    <title>Mind Map {{ mapid }}</title>
     <script src="{% static 'jQuery_Connections_files/jquery-latest.min.js' %}"></script>
     <script src="{% static 'jQuery_Connections_files/jquery-ui.js' %}"></script>
     <script type="text/javascript" src="{% static 'jQuery_Connections_files/jquery-timing.min.js' %}"></script>
@@ -13,8 +13,22 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
 
     <script type="text/JavaScript">
-    var ID = 1000000;
+    var ID = 0;
 $(document).ready(function() {
+
+    {% for node in nodes %}
+    // Create a new element that isn't connected to any element
+    ID = Math.max(ID, {{ node.num }})
+    var newDiv = $('<div>', {
+        id: 'draggable' + {{ node.num }},
+        class: 'draggable ui-widget-content ui-draggable',
+        style: 'position: absolute; line-height: 20px; padding: 5px; left: {{ node.positionx }}px; top: {{ node.positiony }}px;',
+        html: '<p>{{ node.content }}</p>'
+    });
+    newDiv.appendTo('body');
+    newDiv.draggable();
+    {% endfor %}
+
 
     $(".draggable").draggable();
     {% for relation in relations %}
@@ -124,6 +138,7 @@ $(document).ready(function() {
         // to /api/save with all data in json
         var nodes = [];
         var records = [];
+        var mapid = {{ mapid }};
         $('.draggable').each(function() {
             nodes.push({
                 id: $(this).attr('id').match(/\d+/)[0],
@@ -142,7 +157,7 @@ $(document).ready(function() {
         // Send a post request with the information
         $.ajax({
             type: "POST",
-            url: "/api/save/",
+            url: "/api/save/{{ mapid }}/",
             data: `{
                 "nodes": ${JSON.stringify(nodes)},
                 "relation": ${JSON.stringify(records)}
@@ -162,79 +177,79 @@ $(document).ready(function() {
 
         var elements = [
             {
-                id: "draggable2000001",
+                id: "draggable1",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 640px; top: 322px;",
                 text: "Climate Change"
             },
             {
-                id: "draggable2000002",
+                id: "draggable2",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 881px; top: 322px;",
                 text: "Causes"
             },
             {
-                id: "draggable2000003",
+                id: "draggable3",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 674px; top: 166px;",
                 text: "Evidence"
             },
             {
-                id: "draggable2000004",
+                id: "draggable4",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 673px; top: 486px;",
                 text: "Solutions"
             },
             {
-                id: "draggable2000005",
+                id: "draggable5",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 482px; top: 487px;",
                 text: "further Research"
             },
             {
-                id: "draggable2000006",
+                id: "draggable6",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 610px; top: 581px;",
                 text: "Change human behavior"
             },
             {
-                id: "draggable2000007",
+                id: "draggable7",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 592px; top: 668px;",
                 text: "Reduce burning of fossil fuels"
             },
             {
-                id: "draggable2000008",
+                id: "draggable8",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 859px; top: 579px;",
                 text: "Explore renewable energy sources"
             },
             {
-                id: "draggable2000009",
+                id: "draggable9",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 1012px; top: 255px;",
                 text: "human activities"
             },
             {
-                id: "draggable2000010",
+                id: "draggable10",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 973px; top: 397px;",
                 text: "Natural Environment changes"
             },
             {
-                id: "draggable2000011",
+                id: "draggable11",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 810px; top: 104px;",
                 text: "Warming Oceans"
             },
             {
-                id: "draggable2000012",
+                id: "draggable12",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 606px; top: 30px;",
                 text: "increase in extreme weather"
             },
             {
-                id: "draggable2000013",
+                id: "draggable13",
                 class: "draggable ui-widget-content ui-draggable",
                 style: "line-height: 20px; padding: 5px; position: absolute; left: 456px; top: 105px;",
                 text: "melting glaciers"
@@ -253,18 +268,18 @@ $(document).ready(function() {
 
 
         var connections = [
-            {from: "2000001", to: "2000002"},
-            {from: "2000001", to: "2000003"},
-            {from: "2000001", to: "2000004"},
-            {from: "2000004", to: "2000005"},
-            {from: "2000004", to: "2000006"},
-            {from: "2000006", to: "2000007"},
-            {from: "2000006", to: "2000008"},
-            {from: "2000002", to: "2000009"},
-            {from: "2000002", to: "2000010"},
-            {from: "2000003", to: "2000011"},
-            {from: "2000003", to: "2000012"},
-            {from: "2000003", to: "2000013"},
+            {from: "1", to: "2"},
+            {from: "1", to: "3"},
+            {from: "1", to: "4"},
+            {from: "4", to: "5"},
+            {from: "4", to: "6"},
+            {from: "6", to: "7"},
+            {from: "6", to: "8"},
+            {from: "2", to: "9"},
+            {from: "2", to: "10"},
+            {from: "3", to: "11"},
+            {from: "3", to: "12"},
+            {from: "3", to: "13"},
         ];
 
         connections.forEach(function(connection) {
@@ -294,12 +309,7 @@ $(document).ready(function() {
     <button id="clearButton">Clear All</button>
     <button id="resetButton">Template</button>
     <br style="clear: both;">
-    {% for node in nodes %}
-    <div id="draggable{{ node.num }}" class="draggable ui-widget-content ui-draggable"
-         style="line-height: 20px; padding: 5px; position: absolute; left: {{ node.positionx }}px; top: {{ node.positiony }}px;">
-      <p>{{ node.content }}</p>
-    </div>
-    {% endfor %}
+
 
 
 </body>
