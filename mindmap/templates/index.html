@@ -1,305 +1,57 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <title>Mind Map</title>
     <script src="{% static 'jQuery_Connections_files/jquery-latest.min.js' %}"></script>
-    <script src="{% static 'jQuery_Connections_files/jquery-ui.js' %}"></script>
-    <script type="text/javascript" src="{% static 'jQuery_Connections_files/jquery-timing.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'jQuery_Connections_files/jquery.ui.touch-punch.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'jQuery_Connections_files/jquery.connections.js' %}"></script>
-
     <link rel="stylesheet" href="{% static 'style.css' %}">
 
-    <script type="text/JavaScript">
-    var ID = 1000000;
-$(document).ready(function() {
+    <script>
+      function showInputBox() {
+        document.getElementById("inputBox").style.display = "block";
+      }
 
-    $(".draggable").draggable();
-    {% for relation in relations %}
-        $("#draggable{{ relation.parent }}, #draggable{{ relation.child }}").connections({'class': 'fast'});
-        var record = $('<div>', {
-            id: 'recordConnect',
-            style: 'width: 0; height: 0;',
-            from: {{ relation.parent }},
-            to: {{ relation.child }}
-        });
-        record.appendTo('body');
-    {% endfor %}
-    $.repeat().add('connection').each($).connections('update').wait(10);
-
-
-    $(document).on('dblclick', '.draggable', function () {
-        // double click the div to input text in node
-        const input = $('<input>', {
-            type: 'text',
-            val: $(this).text().trim()
-        });
-
-        $(this).html(input);
-        input.focus();
-    });
-
-    $(document).on('blur', 'input', function () {
-        const div = $(this).parent();
-        div.html('<p>' + $(this).val() + '</p>');
-    });
-
-
-    // Handle right click events on each div
-    $(document).on('contextmenu', '[id^="draggable"]', (function (event) {
+    $(function() {
+      $('#createForm').submit(function(event) {
         event.preventDefault();
-        var options = '<button class="delete">Delete</button>' +
-            '<button class="create">Create</button>';
-        $(this).append(options);
-        // Handle create button click
-        $(this).find('.create').click(function () {
-            // Create a new element that is connected to current element
-            ID++;
-            const newDiv = $('<div>', {
-                id: 'draggable' + ID,
-                class: 'draggable ui-widget-content ui-draggable',
-                style: 'position: absolute; line-height: 20px; padding: 5px;',
-                html: '<p>Drag me around</p>'
-            });
-            newDiv.appendTo('body');
-            newDiv.draggable();
-            $(this).closest('.draggable').connections({to: newDiv, 'class': 'fast'});
-            var record = $('<div>', {
-                id: 'recordConnect',
-                style: 'width: 0; height: 0;',
-                from: $(this).closest('.draggable').attr('id').match(/\d+/),
-                to: ID
-            });
-            record.appendTo('body');
-            $.repeat().add('connection').each($).connections('update').wait(10);
-        });
-        $(this).find('.delete').click(function () {
-            // delete option on one node
-                var temp = $(this).closest('.draggable');
-            $('div[id="recordConnect"]').filter(function () {
-                console.log($(this).attr('from'), temp.attr('id').match(/\d+/)[0]);
-                return $(this).attr('from') === temp.attr('id').match(/\d+/)[0]
-                    || $(this).attr('to') === temp.attr('id').match(/\d+/)[0];
-            }).remove();
-            $(this).closest('.draggable').remove();
-            $(this).closest('.draggable').connections('remove');
-        });
-    }));
+        var mapName = $('#mapName').val();
+        var url = '/api/create/';
+        var data = JSON.stringify({'mapName': mapName});
 
-
-    $(document).on("click", (function (event) {
-        // delete options when click elewhere on the screen
-        if (!$(event.target).closest('.draggable').length) {
-            $('.draggable button').remove();
-        }
-    }));
-
-
-    $("#createDivButton").click(function() {
-        // Create a new element that isn't connected to any element
-        ID++;
-        const newDiv = $('<div>', {
-            id: 'draggable' + ID,
-            class: 'draggable ui-widget-content ui-draggable',
-            style: 'position: absolute; line-height: 20px; padding: 5px;',
-            html: '<p>Drag me around</p>'
-        });
-        newDiv.appendTo('body');
-        newDiv.draggable();
-    });
-
-
-    $("#clearButton").click(function() {
-        // clear all elements
-        $("div[id=recordConnect]").remove();
-        $('.draggable').remove();
-        $('.draggable').connections('remove');
-    });
-
-
-    $("#saveButton").click(function() {
-        // save the concept map but sending a post request
-        // to /api/save with all data in json
-        var nodes = [];
-        var records = [];
-        $('.draggable').each(function() {
-            nodes.push({
-                id: $(this).attr('id').match(/\d+/)[0],
-                positionx: $(this).position().left,
-                positiony: $(this).position().top,
-                content: $(this).text().trim()
-            })
-        });
-        $('div[id="recordConnect"]').each(function() {
-            records.push({
-                from: $(this).attr("from"),
-                to: $(this).attr("to")
-            })
-        });
-
-        // Send a post request with the information
         $.ajax({
-            type: "POST",
-            url: "/api/save/",
-            data: `{
-                "nodes": ${JSON.stringify(nodes)},
-                "relation": ${JSON.stringify(records)}
-            }`,
-            success: function (response) {
-                console.log("data saved");
-            }
+          url: url,
+          type: 'POST',
+          data: data,
+          contentType: 'application/json',
+          success: function(response) {
+            var mapNum = response.mapNum;
+            window.location.href = '/map/' + mapNum;
+          }
         });
+      });
     });
-
-
-    $("#resetButton").click(function() {
-        // first delete all elements and hardcoded the climate change mind map
-        $("div[id=recordConnect]").remove();
-        $('.draggable').remove();
-        $('.draggable').connections('remove');
-
-        var elements = [
-            {
-                id: "draggable2000001",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 640px; top: 322px;",
-                text: "Climate Change"
-            },
-            {
-                id: "draggable2000002",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 881px; top: 322px;",
-                text: "Causes"
-            },
-            {
-                id: "draggable2000003",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 674px; top: 166px;",
-                text: "Evidence"
-            },
-            {
-                id: "draggable2000004",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 673px; top: 486px;",
-                text: "Solutions"
-            },
-            {
-                id: "draggable2000005",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 482px; top: 487px;",
-                text: "further Research"
-            },
-            {
-                id: "draggable2000006",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 610px; top: 581px;",
-                text: "Change human behavior"
-            },
-            {
-                id: "draggable2000007",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 592px; top: 668px;",
-                text: "Reduce burning of fossil fuels"
-            },
-            {
-                id: "draggable2000008",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 859px; top: 579px;",
-                text: "Explore renewable energy sources"
-            },
-            {
-                id: "draggable2000009",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 1012px; top: 255px;",
-                text: "human activities"
-            },
-            {
-                id: "draggable2000010",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 973px; top: 397px;",
-                text: "Natural Environment changes"
-            },
-            {
-                id: "draggable2000011",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 810px; top: 104px;",
-                text: "Warming Oceans"
-            },
-            {
-                id: "draggable2000012",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 606px; top: 30px;",
-                text: "increase in extreme weather"
-            },
-            {
-                id: "draggable2000013",
-                class: "draggable ui-widget-content ui-draggable",
-                style: "line-height: 20px; padding: 5px; position: absolute; left: 456px; top: 105px;",
-                text: "melting glaciers"
-            },
-        ];
-        elements.forEach(function(element) {
-            var newDiv = $('<div>', {
-                id: element.id,
-                class: element.class,
-                style: element.style,
-                html: element.text,
-            });
-            newDiv.appendTo('body');
-            newDiv.draggable();
-        });
-
-
-        var connections = [
-            {from: "2000001", to: "2000002"},
-            {from: "2000001", to: "2000003"},
-            {from: "2000001", to: "2000004"},
-            {from: "2000004", to: "2000005"},
-            {from: "2000004", to: "2000006"},
-            {from: "2000006", to: "2000007"},
-            {from: "2000006", to: "2000008"},
-            {from: "2000002", to: "2000009"},
-            {from: "2000002", to: "2000010"},
-            {from: "2000003", to: "2000011"},
-            {from: "2000003", to: "2000012"},
-            {from: "2000003", to: "2000013"},
-        ];
-
-        connections.forEach(function(connection) {
-            var newDiv = $("<div>", {
-                id: "recordConnect",
-                style: "width: 0; height: 0;",
-                from: connection.from,
-                to: connection.to
-            });
-            newDiv.appendTo('body');
-            newDiv.draggable();
-        });
-
-        connections.forEach(function(connection) {
-            $(`#draggable${connection.to}, #draggable${connection.from}`).connections({'class': 'fast'});
-        });
-    });
-
-});
     </script>
 
-
-  </head>
+<h1>Concept Maps</h1>
+</head>
   <body>
-    <button id="createDivButton">new root</button>
-    <button id="saveButton">save</button>
-    <button id="clearButton">Clear All</button>
-    <button id="resetButton">Template</button>
-    <br style="clear: both;">
-    {% for node in nodes %}
-    <div id="draggable{{ node.num }}" class="draggable ui-widget-content ui-draggable"
-         style="line-height: 20px; padding: 5px; position: absolute; left: {{ node.positionx }}px; top: {{ node.positiony }}px;">
-      <p>{{ node.content }}</p>
-    </div>
+
+  <ul>
+    {% for map in maps %}
+      <li><a href="/map/{{ map.id }}/">{{ map.mapname }}</a> </li>
     {% endfor %}
+  </ul>
+  <button onclick="showInputBox()">New Map</button>
+    <div id="inputBox" style="display:none;">
+      <form id="createForm">
+        <label for="mapName">Map Name:</label>
+        <input type="text" id="mapName" name="mapName">
+        <input type="submit" value="Create Map">
+      </form>
+    </div>
+
 
 
 </body>

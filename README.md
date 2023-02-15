@@ -1,7 +1,7 @@
 # Task 1: Concept Map
 ## Features:
 
-- Allow users to create a concept map on an HTML page.
+- Allow users to create concept maps on an HTML pages.
 - Provide the ability to save the concept map to a database for future reference.
 
 ## Functions:
@@ -21,4 +21,3 @@
 - The text in a node cannot wrap to multiple lines.
 - Nodes can only be in the form of rectangles.
 - User login functionality is not included due to time constraints.
-- Currently, only one concept map can be saved, also due to time constraints.

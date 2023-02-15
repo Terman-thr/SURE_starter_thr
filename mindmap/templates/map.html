@@ -3,7 +3,7 @@
 <html lang="en"><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Mind Map {{ mapid }}</title>
+    <title>{{ mapname }}</title>
     <script src="{% static 'jQuery_Connections_files/jquery-latest.min.js' %}"></script>
     <script src="{% static 'jQuery_Connections_files/jquery-ui.js' %}"></script>
     <script type="text/javascript" src="{% static 'jQuery_Connections_files/jquery-timing.min.js' %}"></script>
@@ -298,6 +298,9 @@ $(document).ready(function() {
         });
     });
 
+    $("#indexButton").click(function () {
+        window.location.href = "/";
+    });
 });
     </script>
 
@@ -308,6 +311,7 @@ $(document).ready(function() {
     <button id="saveButton">save</button>
     <button id="clearButton">Clear All</button>
     <button id="resetButton">Template</button>
+    <button id="indexButton">Main Page</button>
     <br style="clear: both;">
 
 

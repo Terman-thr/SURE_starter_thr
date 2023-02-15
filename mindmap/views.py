@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import render
-from .models import Node, Relation
+from .models import Node, Relation, Maps
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
@@ -8,18 +8,31 @@ from django.db import connection
 
 def get_index(request):
     """Render the index page."""
-    #db_reset()
-    # Get all nodes
-    nodes = Node.objects.all()
-    relation = Relation.objects.all()
-    return render(request, 'index.html', {'nodes': nodes, 'relations': relation})
+    maps = Maps.objects.all()
+    return render(request, 'index.html', {'maps': maps})
+
+
+@csrf_exempt
+def create_map(request):
+    """Create a new map and return new map id."""
+
+    if request.method == 'POST':
+        # Get the map name from the request
+        data = json.loads(request.body.decode('utf-8'))
+        map_name = data['mapName']
+        # Create a new map in the database
+        new_map = Maps.objects.create(mapname=map_name)
+        # Return a JSON response with the new map number
+        response_data = {'mapNum': new_map.id}
+        return JsonResponse(response_data)
 
 
 def get_map(request, id):
     """Render different map requests."""
     nodes = Node.objects.filter(mapid=id)
     relation = Relation.objects.filter(mapid=id)
-    return render(request, 'map.html', {'nodes': nodes, 'relations': relation, 'mapid': id})
+    mapname = Maps.objects.get(id=id).mapname
+    return render(request, 'map.html', {'nodes': nodes, 'relations': relation, 'mapid': id, 'mapname': mapname})
 
 
 @csrf_exempt
