@@ -6,6 +6,7 @@
 
 ## Functions:
 
+- Multiple Concept Maps: User can create different concept maps on main page.
 - Add Root Node: Create a new node as a root node that is not connected to any existing nodes.
 - Save Concept Map: Save the concept map to the database.
 - Clear: Delete all elements on the screen.
